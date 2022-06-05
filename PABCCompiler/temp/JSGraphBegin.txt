@@ -1,0 +1,160 @@
+<script charset="utf-8">
+var cx = null;
+var cv = null;
+
+function SetP(x,y,R,G,B){
+	cx.fillStyle  = "rgb("+R+","+G+","+B+")";
+	cx.fillRect(x,y,1,1);
+}
+
+function Elps(x,y,rx,ry,fR,fG,fB,width = 0,sR = null,sG = null,sB = null) {
+	cx.beginPath();
+	cx.fillStyle = "rgb("+fR+","+fG+","+fB+")";
+	cx.ellipse(x,y,rx,ry,0,0,2 * Math.PI);
+	cx.fill();
+	if (sR != null && sG != null && sB != null && width != 0){
+		cx.strokeStyle = "rgb("+sR+","+sG+","+sB+")";
+		cx.lineWidth = width;
+		cx.stroke();
+	}
+	cx.closePath();
+}
+function ElpsS(x, y, rx, ry, R, G, B,width) {
+	cx.beginPath();
+	cx.strokeStyle = "rgb("+R+","+G+","+B+")";
+	cx.ellipse(x,y,rx,ry,0,0,2 * Math.PI);
+	cx.stroke();
+	cx.closePath();
+}
+function Crcl(x,y,r,fR,fG,fB,width = 0,sR = null,sG = null,sB = null) {
+	cx.beginPath();
+	cx.fillStyle = "rgb("+fR+","+fG+","+fB+")";
+	cx.arc(x,y,r,0, 2*Math.PI);
+	cx.fill();
+	if (sR != null && sG != null && sB != null && width != 0){
+		cx.strokeStyle = "rgb("+sR+","+sG+","+sB+")";
+		cx.lineWidth = width;
+		cx.stroke();
+	}
+	cx.closePath();
+}
+function CrclS(x,y,r,sR,sG,sB,width) {
+	cx.beginPath();
+	cx.strokeStyle = "rgb("+sR+","+sG+","+sB+")";
+	cx.lineWidth = width;
+	cx.arc(x,y,r,0, 2*Math.PI);
+	cx.stroke();
+	cx.closePath();
+}
+
+function Arc(x,y,r,angle1,angle2,R,G,B,width){
+	cx.beginPath();
+	cx.strokeStyle = "rgb("+R+","+G+","+B+")";
+	cx.lineWidth = width;
+	cx.arc(x,y,r,-angle1*Math.PI/180,-angle2*Math.PI/180,true);
+	cx.stroke();
+	cx.closePath();
+}
+function Sect(x,y,r,angle1,angle2,fR,fG,fB,sR = null,sG = null,sB = null,width = 0){
+	cx.beginPath();
+	cx.fillStyle = "rgb("+fR+","+fG+","+fB+")";
+	cx.moveTo(x,y);
+	cx.arc(x,y,r,-angle1*Math.PI/180, -angle2*Math.PI/180,true);
+	cx.lineTo(x,y);
+	cx.fill();
+	if (sR != null && sG != null && sB != null && width != 0){
+		cx.strokeStyle = "rgb("+sR+","+sG+","+sB+")";
+		cx.lineWidth = width;
+		cx.stroke();
+	}
+	
+	cx.closePath();
+}
+function SectS(x,y,r,angle1,angle2,R,G,B,width){
+	cx.beginPath();
+	cx.strokeStyle = "rgb("+R+","+G+","+B+")";
+	cx.lineWidth = width;
+	cx.moveTo(x,y);
+	cx.arc(x,y,r,-angle1*Math.PI/180, -angle2*Math.PI/180,true);
+	cx.lineTo(x,y);
+	cx.stroke();
+	cx.closePath();
+}
+
+function Rct(x,y,w,h,fR,fG,fB,width = 0,sR = null,sG = null,sB = null) {
+	cx.fillStyle = "rgb("+fR+","+fG+","+fB+")";
+	cx.fillRect(x,y,w,h);
+	if (sR != null && sG != null && sB != null && width != 0){
+		cx.strokeStyle = "rgb("+sR+","+sG+","+sB+")";
+		cx.lineWidth = width;
+		cx.strokeRect(x,y,w,h);
+	}
+}
+function RctS(x,y,w,h,sR,sG,sB,width) {
+	cx.strokeStyle = "rgb("+sR+","+sG+","+sB+")";
+	cx.lineWidth = width;
+	cx.strokeRect(x,y,w,h);
+}
+
+
+function RndLns(arrX1,arrY1,arrX2,arrY2,w,R,G,B){
+	cx.strokeStyle = "rgb("+R+","+G+","+B+")";
+	cx.lineWidth = w;
+	for (let i = 0; i < arrX1.length; i++){
+		cx.beginPath();
+		cx.moveTo(arrX1[i],arrY1[i]);
+		cx.lineTo(arrX2[i],arrY2[i]);
+		cx.stroke();
+		cx.closePath();
+	}
+}
+function Lns(arr_x,arr_y,w,R,G,B) {
+	cx.strokeStyle = "rgb("+R+","+G+","+B+")";
+	cx.lineWidth = w;
+	cx.beginPath();
+    for (let i = 1; i < arr_x.length; i++){
+		cx.moveTo(arr_x[i-1],arr_y[i-1]);
+		cx.lineTo(arr_x[i],arr_y[i]);
+	}
+	cx.stroke();
+	cx.closePath();
+}
+
+function GetTextSize(text){
+	let metrics = cx.measureText(text);
+	let h = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+	return {width:metrics.width,height:h};
+}
+
+function Txt(x,y,s,font,R,G,B,align,align_h,angle) {
+	cx.save();
+	cx.font = font;
+	y += GetTextSize(s).height*0.05;
+	if (align_h == "center")
+		y -= GetTextSize(s).height/2;
+	else if (align_h == "bottom")
+		y -= GetTextSize(s).height;
+	cx.translate(x,y);
+	cx.rotate(angle*Math.PI/180);
+	cx.fillStyle = "rgb("+R+","+G+","+B+")";
+	cx.textAlign = align;
+	cx.textBaseline = "top";
+	cx.fillText(s,0,0);
+	cx.restore();
+}
+
+function downloadCnv(){
+	let downloadLink = document.createElement('a');
+	downloadLink.setAttribute('download', 'GraphJupyterImage.png');
+	let dataURL = cv.toDataURL('image/png');
+	let url = dataURL.replace(/^data:image\/png/,'data:application/octet-stream');
+	downloadLink.setAttribute('href',url);
+	downloadLink.click();
+}
+function copyCnv(){
+	cv.toBlob(function(blob) { 
+		const item = new ClipboardItem({ "image/png": blob });
+		navigator.clipboard.write([item]); 
+	});
+}
+
