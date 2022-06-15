@@ -47,6 +47,8 @@ namespace ZMQServer.Sockets
             heartbeatLoop.Start();
 
             OutputReceived += Shell.TempOutput;
+
+            Logger.Log("Compiler loops started!");
         }
 
         private static void CompilerLoop()
@@ -67,9 +69,13 @@ namespace ZMQServer.Sockets
             }
         }
 
+
+
         public static void Init()
         {
             GetActivePorts();
+
+            Logger.Log("Got free ports");
 
             inputSocket = new PushSocket();
             inputSocket.Bind("tcp://*:" + compilerInputPort);
@@ -86,6 +92,13 @@ namespace ZMQServer.Sockets
             StartCompilerServer();
         }
 
+        public static void RestartCompiler()
+        {
+            compilerServerProcess.Kill();
+            Logger.Log("Compiler-runner killed");
+            StartCompilerServer();
+        }
+
         public static string RequestCompilation(string code)
         {
             compilerSocket.SendFrame(code);
@@ -98,21 +111,23 @@ namespace ZMQServer.Sockets
             string exe = System.Reflection.Assembly.GetExecutingAssembly().Location;
             string exeDir = System.IO.Path.GetDirectoryName(exe);
 
-            Logger.Log("Exe dir: " + exeDir + serverPath);
+            Logger.Log("Exe: " + exeDir + serverPath);
 
             compilerServerProcess = new Process();
             compilerServerProcess.StartInfo.FileName = "mono";
-            compilerServerProcess.StartInfo.WorkingDirectory = exeDir + "/PABCCompiler";
             //compilerServerProcess.StartInfo.FileName = exeDir + serverPath;
-            compilerServerProcess.StartInfo.Arguments = exeDir + serverPath + " " + compilerPort.ToString() + " " + compilerOutputPort.ToString() +
+            compilerServerProcess.StartInfo.WorkingDirectory = exeDir + "/PABCCompiler";
+            compilerServerProcess.StartInfo.Arguments = exeDir + serverPath +" "+ compilerPort.ToString() + " " + compilerOutputPort.ToString() +
                                                         " " + compilerInputPort.ToString() + " " + heartbeatPort.ToString();
 
-            Logger.Log("With args: " + exeDir + serverPath + " " + compilerServerProcess.StartInfo.Arguments);
+            Logger.Log("With args: " +compilerServerProcess.StartInfo.Arguments);
 
             compilerServerProcess.StartInfo.UseShellExecute = false;
             compilerServerProcess.StartInfo.CreateNoWindow = true;
 
             compilerServerProcess.Start();
+
+            Logger.Log("Compiler started initted");
         }
 
         public static void InputToCompiler(string input)

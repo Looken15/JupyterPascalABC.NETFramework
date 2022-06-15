@@ -89,7 +89,7 @@ namespace ZMQServer
                 connectionFilePath = connectionFile;
             }
 
-            Logger.Log(connectionFilePath, "123.txt");
+            Logger.Log("Connection file: "+connectionFilePath);
 
             jsonConnectionFile = File.ReadAllText(connectionFilePath);
 
@@ -101,6 +101,8 @@ namespace ZMQServer
             Shell.Init(currentConnection);
             Iopub.Init(currentConnection);
             Compiler.Init();
+
+            Logger.Log("Threads inited");
 
             shellIdenteties = new List<byte[]>();
             shellParentHeader = new Header();

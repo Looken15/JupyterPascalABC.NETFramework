@@ -17,6 +17,8 @@ namespace ZMQServer.Sockets
 {
     public static class Shell
     {
+        private static int compilationCounter = 0;
+        private const int compilationsToRestart = 10;
 
         public static RouterSocket shellSocket;
         public static string shellAddress;
@@ -136,12 +138,13 @@ namespace ZMQServer.Sockets
                 Iopub.SendExecutionData(lastString, currentHeader, currentIdenteties);
                 lastString = "";
 
-
-
                 resultString.Clear();
                 firstLine = true;
                 processing = false;
                 Iopub.SendStatus("idle", currentHeader, currentIdenteties);
+
+                if (compilationCounter % compilationsToRestart == 0)
+                    Compiler.RestartCompiler();
                 return;
             }
             Iopub.SendDisplayData(s, currentHeader, currentIdenteties, !firstLine, currentId);
@@ -188,10 +191,13 @@ namespace ZMQServer.Sockets
 
             var code = "uses RedirectIOMode1;\n" + requestContent.code;
 
+            compilationCounter++;
             var compilationResult = Compiler.RequestCompilation(code);
             if (compilationResult != "[OK]")
             {
                 Iopub.SendDisplayData(compilationResult, parentHeader, identeties, false, currentId);
+                if (compilationCounter % compilationsToRestart == 0)
+                    Compiler.RestartCompiler();
                 return;
             }
             processing = true;

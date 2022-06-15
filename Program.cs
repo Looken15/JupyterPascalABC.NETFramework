@@ -11,12 +11,14 @@ namespace ZMQServer
         static void Main(string[] args)
         {
             Logger.Init();
+            Logger.Log("Logger initted");
             if (args.Length != 1)
             {
                 Logger.Log("no arguments!");
                 Environment.Exit(0);
             }
             Server server = new Server(args[0]);
+            Logger.Log("Created server");
 
             server.StartLoops();
         }

@@ -24,7 +24,7 @@ namespace ZMQServer
             string exe = System.Reflection.Assembly.GetExecutingAssembly().Location;
             string exeDir = System.IO.Path.GetDirectoryName(exe);
             if (logPath == null)
-                logPath = exeDir + @"\logs\";
+                logPath = exeDir + "/logs/";
             if (!Directory.Exists(logPath))
                 Directory.CreateDirectory(logPath);
             Clear();
@@ -32,6 +32,7 @@ namespace ZMQServer
 
         public static void Clear()
         {
+            File.WriteAllText(logPath + "commonLog.txt", "");
             File.WriteAllText(logPath + hbFilename, "");
             File.WriteAllText(logPath + shellFilename, "");
             File.WriteAllText(logPath + iopubFilename, "");
